@@ -145,6 +145,7 @@ https://code.orgmode.org/bzg/org-mode/commit/13424336a6f30c50952d291e7a82906c121
       (message "Lower-cased %d matches" count))))
 #+end_src
 
+
 * Ensure UTF-8
 
 #+begin_src emacs-lisp
@@ -235,9 +236,17 @@ by ~straight.el~
 
 #+name: straight-setup
 #+begin_src emacs-lisp
+  ;; make all use-package instances use straight.el
   (setq straight-use-package-by-default t)
+
+  ;; fetch developmental version of straight.el
   (setq straight-repository-branch "develop")
 
+  ;; redirect all package repos and builddirs elsewhere
+  (setq straight-base-dir "~/.cache/straight")
+#+end_src
+
+#+begin_src emacs-lisp
   ;; Bootstrap straight.el
   (defvar bootstrap-version)
   (let ((bootstrap-file
@@ -529,7 +538,7 @@ This needs a ton of work
 #+end_src
 
 
-* Terminals
+* Terminals with emacs-libvterm
 
 Vterm ftw
 
@@ -554,25 +563,50 @@ buffer to vterm so it sticks to the window it was launched with.
 
 #+begin_src emacs-lisp
   (use-package vterm-toggle
+
     :bind
     (("C-M-'" . vterm-toggle-cd))
+
     :config
+
     ;; reset window layout after kill
     (setq vterm-toggle-reset-window-configration-after-exit t)
+
     ;; toggle behaviour - like a toggle keep it running
     (setq vterm-toggle-hide-method nil)
-    ;; show vterm in a window at the bottom
-    (setq vterm-toggle-fullscreen-p nil)
-    (add-to-list 'display-buffer-alist
-             '((lambda(bufname _) (with-current-buffer bufname (equal major-mode 'vterm-mode)))
-                (display-buffer-reuse-window display-buffer-at-bottom)
-                ;;(display-buffer-reuse-window display-buffer-in-direction)
-                ;;display-buffer-in-direction/direction/dedicated is added in emacs27
-                ;;(direction . bottom)
-                ;;(dedicated . t) ;dedicated is supported in emacs27
-                (reusable-frames . visible)
-                (window-height . 0.3)))
-    )
+
+#+end_src
+
+
+Show vterm in a window at the bottom
+
+#+begin_src emacs-lisp
+  (setq vterm-toggle-fullscreen-p nil)
+  (add-to-list 'display-buffer-alist
+           '((lambda(bufname _) (with-current-buffer bufname (equal major-mode 'vterm-mode)))
+              (display-buffer-reuse-window display-buffer-at-bottom)
+              ;;(display-buffer-reuse-window display-buffer-in-direction)
+              ;;display-buffer-in-direction/direction/dedicated is added in emacs27
+              ;;(direction . bottom)
+              ;;(dedicated . t) ;dedicated is supported in emacs27
+              (reusable-frames . visible)
+              (window-height . 0.3)))
+#+end_src
+
+
+Make counsel use the correct function to yank in vterm buffers.
+
+#+begin_src emacs-lisp
+  (defun vterm-counsel-yank-pop-action (orig-fun &rest args)
+    (if (equal major-mode 'vterm-mode)
+        (let ((inhibit-read-only t)
+              (yank-undo-function (lambda (_start _end) (vterm-undo))))
+          (cl-letf (((symbol-function 'insert-for-yank)
+                 (lambda (str) (vterm-send-string str t))))
+              (apply orig-fun args)))
+      (apply orig-fun args)))
+
+  (advice-add 'counsel-yank-pop-action :around #'vterm-counsel-yank-pop-action))
 #+end_src
 
 
@@ -592,13 +626,72 @@ own.
 #+end_src
 
 
+
 * Code utilities
+
+
+** TODO Templates and snippets with minad's tempel
+
+Seems a lot simpler than yasnippet but will have to work on templates.
+
+#+begin_src emacs-lisp
+  (use-package tempel
+    ;; Require trigger prefix before template name when completing.
+    ;; :custom
+    ;; (tempel-trigger-prefix "<")
+
+    :bind (("M-+" . tempel-complete) ;; Alternative tempel-expand
+           ("M-*" . tempel-insert))
+#+end_src
+
+
+Configuration: I'm setting the =tempel-path= because it defaults to
+=~/.config/emacs/templates= which I don't use. But I think I'll
+eventually switch to something like that.
+
+#+begin_src emacs-lisp
+  :init
+(setq tempel-path "~/.emacs.d/templates")
+#+end_src
+
+
+Setup completion at point
+
+#+begin_src emacs-lisp
+  (defun tempel-setup-capf ()
+    ;; Add the Tempel Capf to `completion-at-point-functions'.
+    ;; `tempel-expand' only triggers on exact matches. Alternatively use
+    ;; `tempel-complete' if you want to see all matches, but then you
+    ;; should also configure `tempel-trigger-prefix', such that Tempel
+    ;; does not trigger too often when you don't expect it. NOTE: We add
+    ;; `tempel-expand' *before* the main programming mode Capf, such
+    ;; that it will be tried first.
+    (setq-local completion-at-point-functions
+                (cons #'tempel-expand
+                      completion-at-point-functions)))
+#+end_src
+
+
+Hooks
+
+#+begin_src emacs-lisp
+  :hook
+  (prog-mode . tempel-setup-capf)
+  (text-mode . tempel-setup-capf)
+
+      ;; Optionally make the Tempel templates available to Abbrev,
+      ;; either locally or globally. `expand-abbrev' is bound to C-x '.
+      ;; (add-hook 'prog-mode-hook #'tempel-abbrev-mode)
+      ;; (global-tempel-abbrev-mode)
+      )
+#+end_src
 
 
 ** Snippets
 
 #+begin_src emacs-lisp
   (use-package yasnippet
+    :disabled
     :config
     (yas-global-mode 1)
     :diminish yas-minor-mode)
@@ -1178,14 +1271,11 @@ enable.
                           cape-ispell cape-dict cape-symbol cape-line ))
                        (add-to-list 'completion-at-point-functions backend)))
 
-      ;; (add-to-list 'completion-at-point-functions #'cape-file)
-      ;; (add-to-list 'completion-at-point-functions #'cape-dabbrev)
-      ;; (add-to-list 'completion-at-point-functions #'cape-keyword)
-      ;; (add-to-list 'completion-at-point-functions #'cape-abbrev)
-      ;; (add-to-list 'completion-at-point-functions #'cape-ispell)
-      ;; (add-to-list 'completion-at-point-functions #'cape-dict)
-      ;; (add-to-list 'completion-at-point-functions #'cape-symbol)
-      ;; (add-to-list 'completion-at-point-functions #'cape-line)
+  (add-to-list 'completion-at-point-functions #'cape-file)
+  (add-to-list 'completion-at-point-functions #'cape-keyword)
+  (add-to-list 'completion-at-point-functions #'cape-ispell)
+  (add-to-list 'completion-at-point-functions #'cape-dict)
+  (add-to-list 'completion-at-point-functions #'cape-symbol)
 #+end_src
 
 
@@ -1318,6 +1408,7 @@ Update ERC modules
 #+begin_src emacs-lisp
 (erc-update-modules))
 #+end_src
+
 
 * Window Management
 
@@ -1633,15 +1724,16 @@ behaviour in Emacs.
 
 Completion-at-point and completion-in-region with Vertico. Use
 `consult-completion-in-region' if Vertico is enabled. Otherwise use
-the default `completion--in-region' function.
+the default `completion--in-region' function. Disabled because I use
+corfu for =completion-at-point=.
 
 #+begin_src emacs-lisp
-  (setq completion-in-region-function
-            (lambda (&rest args)
-              (apply (if vertico-mode
-                         #'consult-completion-in-region
-                       #'completion--in-region)
-                     args)))
+  ;; (setq completion-in-region-function
+  ;;           (lambda (&rest args)
+  ;;             (apply (if vertico-mode
+  ;;                        #'consult-completion-in-region
+  ;;                      #'completion--in-region)
+  ;;                    args)))
 #+end_src
 
 Prefix the current candidate (See [[https://github.com/minad/vertico/wiki#prefix-current-candidate-with-arrow][relevant section on the wiki]])
@@ -1674,8 +1766,6 @@ at Vertico header.
 (add-hook 'minibuffer-setup-hook #'minibuffer-vertico-setup)
 )
 #+end_src
-
-
 
 
 *** TODO Vertico extensions
@@ -1822,6 +1912,7 @@ Again stolen from Karthik Chikmaglur and needs heavy work, hence not enabled
       :config
       (setq vertico-buffer-display-action 'display-buffer-reuse-window))
 #+end_src
+
 
 
 ** Orderless completion
@@ -2160,6 +2251,9 @@ an outline for his literate Emacs configuration.
      ;; org-edit-src-content-indentation 2
      org-hide-block-startup nil
      org-src-preserve-indentation nil
+
+     ;; allow for increased space between org
+     org-cycle-separator-lines 1
 
      ;; increase indentation by using odd header levels only
      org-odd-levels-only t
@@ -2542,6 +2636,7 @@ Leading or otherwise; procured from [[https://www.reddit.com/r/emacs/comments/9w
     (global-org-modern-mode t)
     )
 #+end_src
+
 
 ** TODO Org-Babel for literate programming
 
