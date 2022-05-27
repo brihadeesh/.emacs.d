@@ -3,7 +3,7 @@
 #+email: brihadeesh@protonmail.com
 #+startup: show3levels
 #+created: <2021-12-04 Sat>
-#+modified: <2021-12-14 Tue>
+#+modified: <2022-05-15 Sun>
 
 * TODO Early init
 
@@ -86,7 +86,6 @@ Lexical binding is required for a lot of stuff here
   (setq vc-follow-symlinks nil)
 #+end_src
 
-
 ** Reload Emacs configuration
 
 I'm not sure I understand how this works entirely but [[https://github.com/joseph8th/literatemacs#tangle-and-reload][joseph8th's repo]]
@@ -102,8 +101,6 @@ first code block can be evaluated using =C-c C-c=:
     (load-file user-init-file))
 #+end_src
 
-
-
 ** TODO Use-package v2 related changes
 
 Need to figure this out - I think maybe ~use-package~ might not be updated
@@ -114,7 +111,6 @@ Need to figure this out - I think maybe ~use-package~ might not be updated
   (require 'diminish)
   (require 'bind-key)
 #+end_src
-
 
 ** Convert all org-keywords/block identifiers to lowercase
 
@@ -180,9 +176,7 @@ Maybe I'll understand what this is about one day
 #+end_src
 
 
-
 * No more garbage
-
 
 ** from customize API
 
@@ -200,7 +194,6 @@ junk.
     ;;; Load custom file. Don't hide errors. Hide success message
     (load custom-file nil t)
  #+end_src
-
 
 ** from backups and autosaves(?)
 
@@ -224,9 +217,7 @@ junk.
  #+end_src
 
 
-
 * Package management
-
 
 ** Setup ~straight.el~
 
@@ -250,7 +241,7 @@ by ~straight.el~
   ;; Bootstrap straight.el
   (defvar bootstrap-version)
   (let ((bootstrap-file
-         (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+         (expand-file-name "straight/repos/straight.el/bootstrap.el" "~/.cache"))
         (bootstrap-version 5))
     (unless (file-exists-p bootstrap-file)
       (with-current-buffer
@@ -261,7 +252,6 @@ by ~straight.el~
         (eval-print-last-sexp)))
     (load bootstrap-file nil 'nomessage))
 #+end_src
-
 
 ** Install and configure =use-package=
 
@@ -280,7 +270,6 @@ on the [[https://github.com/raxod502/straight.el/blob/develop/README.md#integrat
   (setq straight-check-for-modifications nil)
 #+end_src
 
-
 *** Prevent older org-mode versions from being loaded
 
 Check [[https://www.reddit.com/r/emacs/comments/qcj33a/problem_and_workaround_with_orgmode_function/hhmmskg/][this reddit post]] which I found thankfully.
@@ -288,7 +277,6 @@ Check [[https://www.reddit.com/r/emacs/comments/qcj33a/problem_and_workaround_wi
 #+begin_src emacs-lisp
 (straight-use-package 'org)
 #+end_src
-
 
 ** Minimal ~package.el~ setup only to browse packages
 
@@ -299,8 +287,6 @@ Running =package-list-packages= includes them only for browsing
   (add-to-list 'package-archives
                '("melpa" . "https://melpa.org/packages/"))
 #+end_src
-
-
 
 ** Diminish for a cleaner modeline
 
@@ -326,7 +312,6 @@ Running =package-list-packages= includes them only for browsing
 Primarily bootlegged from [[https://sanemacs.com][Sanemacs]] and changed when appropriate (and
 when I thought I understood what I was doing)
 
-
 ** Make *scratch* buffer and *minibuffer* blank
 
 #+name: blank-startup
@@ -337,7 +322,6 @@ when I thought I understood what I was doing)
   (setq initial-scratch-message nil)
 #+end_src
 
-
 ** Make "Emacs" the *window title*
 
 #+name: set-window-title
@@ -345,14 +329,12 @@ when I thought I understood what I was doing)
   (setq-default frame-title-format '("Emacs"))
 #+end_src
 
-
 ** Org-mode as the /initial major mode/
 
 #+name: start-with-org
 #+begin_src emacs-lisp
   (setq initial-major-mode 'org-mode)
 #+end_src
-
 
 ** TODO Disable native popups(?) and bell
 
@@ -364,7 +346,6 @@ when I thought I understood what I was doing)
   ;; Disable bell sound
   (setq ring-bell-function 'ignore)
 #+end_src
-
 
 ** Only *y or n prompts* for speed
 
@@ -380,7 +361,6 @@ Apparently there is a ~short-answers~ variable
    confirm-nonexistent-file-or-buffer nil)
 #+end_src
 
-
 ** Merge Emacs and system clipboards
 
 #+begin_src emacs-lisp
@@ -388,14 +368,12 @@ Apparently there is a ~short-answers~ variable
 (setq-default select-enable-clipboard t)
 #+end_src
 
-
 ** Overwrite selected text
 
 #+name: overwrite-active-region
 #+begin_src emacs-lisp
   (delete-selection-mode 1)
 #+end_src
-
 
 ** Join line to following line
 
@@ -414,7 +392,6 @@ delete-indentation=)
                     (join-line -1)))
 #+end_src
 
-
 ** Delete blank lines and whitespace interactively
 
 Plagiarised from [[https://pragmaticemacs.com/emacs/delete-blank-lines-and-shrink-whitespace/][pragmatic emacs]]
@@ -423,7 +400,6 @@ Plagiarised from [[https://pragmaticemacs.com/emacs/delete-blank-lines-and-shrin
 #+begin_src emacs-lisp
   (global-set-key (kbd "M-SPC") 'shrink-whitespace)
 #+end_src
-
 
 ** Multiple cursors
 
@@ -435,14 +411,12 @@ This is like =C-v=, a visual mode in vim/neovim. I stole this from
   (global-set-key (kbd "C-c m c") 'peremacs/edit-lines)
 #+end_src
 
-
 ** Autoupdate buffer if files has changed on disk
 
 #+name: reload-buffer-on-modification
 #+begin_src emacs-lisp
     (global-auto-revert-mode t)
 #+end_src
-
 
 ** Whitespace mopup
 
@@ -452,7 +426,6 @@ This is like =C-v=, a visual mode in vim/neovim. I stole this from
                 'delete-trailing-whitespace) ;; Delete trailing whitespace on save
 #+end_src
 
-
 ** Simpler kill buffer behaviour
 
 #+name: buffer-killer
@@ -461,7 +434,6 @@ This is like =C-v=, a visual mode in vim/neovim. I stole this from
     (interactive) (kill-buffer (current-buffer)))
   (global-set-key (kbd "C-x k") 'peremacs/kill-this-buffer)
 #+end_src
-
 
 ** TODO Kill without accessing clipboard - reassess if this is really necessary
 
@@ -476,7 +448,6 @@ This is like =C-v=, a visual mode in vim/neovim. I stole this from
   (global-set-key (kbd "C-DEL") 'peremacs/backward-kill-word)
 #+end_src
 
-
 ** Return to last position in buffer
 
 Opens files at last position used. Something about this on [[https://www.emacswiki.org/emacs/SavePlace][Emacs Wiki]]
@@ -486,7 +457,6 @@ Opens files at last position used. Something about this on [[https://www.emacswi
   (save-place-mode 1)
 #+end_src
 
-
 ** TODO Assorted keybindings - is this really necessary
 
 #+name: manual-indent
@@ -495,13 +465,11 @@ Opens files at last position used. Something about this on [[https://www.emacswi
   (global-set-key (kbd "C-<") 'indent-rigidly-left-to-tab-stop)  ; De-indent selection by one tab length
 #+end_src
 
-
 ** Pixel scroll precision mode (Emacs 29+)
 
 #+begin_src emacs-lisp
   (pixel-scroll-precision-mode +1)
 #+end_src
-
 
 ** Prompt before closing Emacs
 
@@ -510,7 +478,6 @@ Opens files at last position used. Something about this on [[https://www.emacswi
 (setq confirm-kill-emacs (lambda (prompt)
                            (y-or-n-p-with-timeout prompt 2 nil)))
 #+end_src
-
 
 ** Show keystrokes
 
@@ -609,7 +576,6 @@ Make counsel use the correct function to yank in vterm buffers.
   (advice-add 'counsel-yank-pop-action :around #'vterm-counsel-yank-pop-action))
 #+end_src
 
-
 ** IGNORE Eshell configuration
 
 Make eshell pop under the main window and not create a window of it's
@@ -626,9 +592,7 @@ own.
 #+end_src
 
 
-
 * Code utilities
-
 
 ** TODO Templates and snippets with minad's tempel
 
@@ -686,7 +650,6 @@ Hooks
       )
 #+end_src
 
-
 ** Snippets
 
 #+begin_src emacs-lisp
@@ -696,7 +659,6 @@ Hooks
     (yas-global-mode 1)
     :diminish yas-minor-mode)
 #+end_src
-
 
 ** TODO Syntax checking with Flycheck
 
@@ -710,7 +672,6 @@ Hooks
     :diminish flycheck-mode
     )
 #+end_src
-
 
 ** Bash - use tabs instead of spaces
 
@@ -726,13 +687,11 @@ custom functions below.
       (add-to-list 'write-file-functions 'delete-trailing-whitespace)))
 #+end_src
 
-
 ** Autopaired parens
 
 #+begin_src emacs-lisp
   (electric-pair-mode 1)
 #+end_src
-
 
 ** Don't add C-x,C-c,C-v; dont ask why though
 
@@ -742,7 +701,6 @@ custom functions below.
   ;; for rectangles, CUA is nice
   (cua-mode t)
 #+end_src
-
 
 ** Aggressive *indentation* coz OCD
 
@@ -755,7 +713,6 @@ itself
     :diminish aggressive-indent-mode)
 #+end_src
 
-
 ** I hate arthropods
 
 ...except those that you can eat
@@ -763,7 +720,6 @@ itself
 #+begin_src emacs-lisp
   (use-package bug-hunter)
 #+end_src
-
 
 ** cl-libify
 
@@ -774,7 +730,6 @@ Convert all (deperecated) =cl= symbols to =cl-lib=
     :disabled)
 #+end_src
 
-
 ** Iedit
 
 A more intuitive way to alter all the occurrences of a word/keyword at once
@@ -782,7 +737,6 @@ A more intuitive way to alter all the occurrences of a word/keyword at once
 #+begin_src emacs-lisp
   (use-package iedit)
 #+end_src
-
 
 ** Show line numbers in programming modes
 
@@ -794,15 +748,14 @@ A more intuitive way to alter all the occurrences of a word/keyword at once
                     #'linum-mode))
 #+end_src
 
-
-** Open shell files from =~/bin= in =sh-mode=
+** Open shell files from script directories in =sh-mode=
 
 Scope for adding more such shit?
 
 #+begin_src emacs-lisp
   (add-to-list 'auto-mode-alist '("/bin/" . sh-mode))
+  (add-to-list 'auto-mode-alist '("/srcpkgs/[[:ascii:]]+/template" . sh-mode))
 #+end_src
-
 
 ** Show matching parens
 
@@ -814,7 +767,6 @@ Scope for adding more such shit?
 
 
 * Languages I (allegedly) use
-
 
 ** Vimscript for editing neovim init
 
@@ -828,7 +780,6 @@ case. I might end up replacing this with a *lua config*
   (add-to-list 'auto-mode-alist '("\\.vim\\(rc\\)?\\'" . vimrc-mode))
 #+end_src
 
-
 ** Lua mode?
 
 I intend to learn and use lua for my neovim config.
@@ -836,7 +787,6 @@ I intend to learn and use lua for my neovim config.
 #+begin_src emacs-lisp
   (use-package lua-mode)
 #+end_src
-
 
 ** Emacs Speaks Statistics for *R* and python(?)
 
@@ -849,7 +799,6 @@ RMarkdown and org-mode is generally better (see next bit for RMarkdown)
   (require `ess-r-mode)
 #+end_src
 
-
 ** Polymode for RMarkdown syntax
 
 #+begin_src emacs-lisp :tangle no
@@ -859,7 +808,6 @@ RMarkdown and org-mode is generally better (see next bit for RMarkdown)
   (add-to-list 'auto-mode-alist '("\\.Rmd" . poly-ess-help+R-mode))
 #+end_src
 
-
 ** C and C++ ???
 
 Like really?
@@ -867,7 +815,6 @@ Like really?
 #+begin_src emacs-lisp
   ;; (use-package cc-mode)
 #+end_src
-
 
 ** AUCTex for LaTex editing + completion
 
@@ -906,7 +853,6 @@ Like really?
   ;; (use-package company-auctex)
 #+end_src
 
-
 ** Spellcheck
 
 Finally figured this out from a [[https://redd.it/ahysvb][reddit post from 2019]].
@@ -929,7 +875,6 @@ Finally figured this out from a [[https://redd.it/ahysvb][reddit post from 2019]
   (add-hook 'prog-mode-hook 'flyspell-prog-mode)
 #+end_src
 
-
 *** Trying something else...
 
 ... because Void linux keeps complaining about not being able to find
@@ -946,7 +891,6 @@ a British English dictionary
   (add-hook 'prog-mode-hook 'flyspell-prog-mode)
 #+end_src
 
-
 ** Something like scrivener from Mac
 
 ...cause I'm gonna become a novelist and/or write large books in the
@@ -957,7 +901,6 @@ near future
     ;; (use-package binder-tutorial)
   #+end_src
 
-
 ** Brainfuck?
 
 Esoteric language which makes absolutely no sense for me considering
@@ -966,7 +909,6 @@ ADHD and all.
 #+begin_src emacs-lisp
     (use-package brainfuck-mode)
 #+end_src
-
 
 ** El Doc for help in echo area
 
@@ -981,6 +923,13 @@ ADHD and all.
      (org-mode . eldoc-mode)))
 #+end_src
 
+** Zig mode
+
+#+begin_src emacs-lisp
+  (use-package zig-mode
+    :config
+    (add-to-list 'auto-mode-alist '("\\.zig\\'" . zig-mode)))
+#+end_src
 
 * Git with Magit and gists with =gist.el=
 
@@ -1026,7 +975,6 @@ ADHD and all.
 #+end_src
 
 
-
 * Ledger for finance
 
 I'm not entirely sure I can start with this yet but I think I've gotta
@@ -1048,7 +996,6 @@ start working on paying of whatever debt I've accumulated.
                       ;; ("payee" "%(binary) -f %(ledger-file) reg @%(payee)")
                       ("account" "%(binary) -f %(ledger-file) reg %(account)"))))
 #+end_src
-
 
 ** IN-PROGRESS Prettier journaling for expenses
 
@@ -1154,7 +1101,7 @@ doing here so I've disabled it for now.
 #+end_src
 
 
-* Company for completions
+* IGNORE Company for completions
 
 Transient: only until I can figure corfu out
 
@@ -1226,7 +1173,7 @@ base Emacs.
     (corfu-quit-no-match t)
 
     :init
-    (corfu-global-mode))
+    (global-corfu-mode))
 #+end_src
 
 
@@ -1251,7 +1198,6 @@ The following might need removal
 
         (corfu-global-mode +1))
 #+end_src
-
 
 ** CAPE - extensions for corfu
 
@@ -1320,17 +1266,18 @@ somewhere. Hmm. I doubt I ever use it so disabling it now.
 #+end_src
 
 
-* Consistent and simpler keybinding assignment
+* IGNORE Consistent and simpler keybinding assignment
+
+Disabled because I use ~use-package~ for keybinds
 
 #+begin_src emacs-lisp
   (use-package general
-    ;; :ensure t
+    :disabled
     :config
     (general-define-key
      "M-/" 'hippie-expand
      "M-z" 'zap-to-char))
 #+end_src
-
 
 
 * ERC for IRC
@@ -1412,7 +1359,6 @@ Update ERC modules
 
 * Window Management
 
-
 ** EXWM
 
 This ofc *doesn't work* on wayland and =pgtk= emacs but am I willing
@@ -1468,8 +1414,6 @@ to wayland/wlroots or something?
     (exwm-input-set-key (kbd "s-w") #'exwm-workspace-switch))
 #+end_src
 
-
-
 ** TODO Workspaces with perspective-el
 
 Independent workspaces for different projects like profiles on RStudio
@@ -1480,6 +1424,10 @@ but perhaps a lot more dynamic. This might need more work hence adding
   (use-package perspective
     :demand t
 
+    :init
+    ;; apparently it's essential to define a prefix on Emacs>=28
+    (setq persp-mode-prefix-key (kbd "C-x x"))
+
     :bind
     ;; these work with selectrum/vertico i.e. `completing-read'
     ;; type completion systems that are appararently closer to
@@ -1489,12 +1437,10 @@ but perhaps a lot more dynamic. This might need more work hence adding
     )
 
     :config
-
     ;; Running `persp-mode' multiple times resets the perspective list...
   (unless (equal (default-value 'persp-mode) t)
     (persp-mode 1)))
 #+end_src
-
 
 *** persp-projectile for proper workspace window management
 
@@ -1503,7 +1449,6 @@ but perhaps a lot more dynamic. This might need more work hence adding
       :bind
       ("C-x x s". persp-projectile-switch-project))
 #+end_src
-
 
 ** Undo disrupted window/frame arrangement after using some shit
 
@@ -1519,7 +1464,6 @@ Stolen from [[https://github.com/karthink/emacs.d][Karthik Chikmaglur's emacs.d]
     :config
     (winner-mode +1))
 #+end_src
-
 
 ** Ace-window
 
@@ -1554,7 +1498,6 @@ Other actions that ~ace-window~ handles:
   "List of actions for `aw-dispatch-default'.")
 #+end_src
 
-
 ** TODO Sane native window management - needs work
 
 Focuses new windows when created.
@@ -1579,8 +1522,6 @@ Focuses new windows when created.
   ;;     (split-window-vertically)
   ;;     (other-window 1)))
   #+end_src
-
-
 
 ** IN-PROGRESS Better popups with popper
 
@@ -1633,7 +1574,6 @@ Focuses new windows when created.
 #+end_src
 
 
-
 * Editing root files & privelege escalation for TRAMP if I ever use it
 
 #+begin_src emacs-lisp
@@ -1644,12 +1584,9 @@ Focuses new windows when created.
 #+end_src
 
 
-
 * Minibuffer completions
 
-
 ** TODO Completion - is [[https://gitlab.com/protesilaos/mct][mct]] worth using?
-
 
 ** IGNORE Prescient command history with =M-x=
 
@@ -1659,7 +1596,6 @@ Focuses new windows when created.
     (prescient-persist-mode 1))
   ;; (use-package selectrum-prescient)
 #+end_src
-
 
 ** Access a list of recently edited files
 
@@ -1674,8 +1610,6 @@ laptop more like it.
             recentf-keep '(file-remote-p file-readable-p))
       (recentf-mode 1))
   #+end_src
-
-
 
 ** IGNORE Selectrum for completions UI
 
@@ -1695,7 +1629,6 @@ behaviour in Emacs.
     ;; intelligent over time
     (prescient-persist-mode +1))
 #+end_src
-
 
 ** Vertico for completions UI
 
@@ -1766,7 +1699,6 @@ at Vertico header.
 (add-hook 'minibuffer-setup-hook #'minibuffer-vertico-setup)
 )
 #+end_src
-
 
 *** TODO Vertico extensions
 
@@ -1913,8 +1845,6 @@ Again stolen from Karthik Chikmaglur and needs heavy work, hence not enabled
       (setq vertico-buffer-display-action 'display-buffer-reuse-window))
 #+end_src
 
-
-
 ** Orderless completion
 
 Search for commands, buffers, etc with vertico without having to match
@@ -2005,7 +1935,6 @@ bootlegged from [[https://github.com/minad/consult/wiki#minads-orderless-configu
         orderless-style-dispatchers '(+orderless-dispatch)))
 #+end_src
 
-
 ** Persistent command history
 
 Persist history over Emacs restarts. Vertico sorts by history position.
@@ -2015,7 +1944,6 @@ Persist history over Emacs restarts. Vertico sorts by history position.
     :init
     (savehist-mode))
 #+end_src
-
 
 ** A few more useful configurations
 
@@ -2043,7 +1971,6 @@ Persist history over Emacs restarts. Vertico sorts by history position.
     ;; )
 #+end_src
 
-
 ** Richer annotations in minubuffer
 
 #+begin_src emacs-lisp
@@ -2069,7 +1996,6 @@ Persist history over Emacs restarts. Vertico sorts by history position.
     ;; (setq marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil))
     )
 #+end_src
-
 
 ** Consult adds more minibuffer functionality
 
@@ -2131,7 +2057,6 @@ Persist history over Emacs restarts. Vertico sorts by history position.
                 ("!" . consult-flycheck)))
 #+end_src
 
-
 ** TODO Embark - actions; reorganise
 
 This I've not used yet but makes a lot of stuff easier like
@@ -2168,9 +2093,6 @@ completion list.
       :hook
       (embark-collect-mode . consult-preview-at-point-mode))
 #+end_src
-
-
-
 
 ** TODO Imenu-list?
 
@@ -2253,21 +2175,24 @@ an outline for his literate Emacs configuration.
      org-src-preserve-indentation nil
 
      ;; allow for increased space between org
-     org-cycle-separator-lines 1
+     ;; org-cycle-separator-lines -1
 
      ;; increase indentation by using odd header levels only
-     org-odd-levels-only t
+     ;; org-odd-levels-only t
 
      ;; not sure
      org-adapt-indentation t
 
      ;; org-startup-folded 'content
-     org-cycle-separator-lines 2
      org-capture-bookmark nil
      org-hide-leading-stars t
 
      ;; display numbers instead of bullets for headings
      org-num-mode t
+
+     ;; faster (single-key) navigation in org-mode
+     ;; type `?' for help
+     ;; org-use-speed-commands t
      )
 
     ;;(setq org-modules
@@ -2339,8 +2264,6 @@ an outline for his literate Emacs configuration.
 
 #+end_src
 
-
-
 *** Better commenting in org-mode code-blocks
 
 Got this from a [[https://emacs.stackexchange.com/a/19741/23936][Stack Exchange answer]] to work around messed up
@@ -2359,35 +2282,31 @@ command messes up lines, undos, and sometimes comment syntax as well.
   (kbd "M-;") 'my-org-comment-dwim)
 #+end_src
 
-
-*** Org-superstar
-
-#+begin_src emacs-lisp :tangle no
-  (use-package org-superstar
-    :after org
-    :hook (org-mode . org-superstar-mode)
-    :custom
-    (org-superstar-remove-leading-stars t)
-    ;;(org-superstar-headline-bullets-list '("◉" "○" "●" "○" "●" "○" "●"))
-    )
-#+end_src
-
-
-** Display emphasis markers on hover
-
-This package makes it much easier to edit Org documents when
-org-hide-emphasis-markers is turned on. It temporarily shows the
-emphasis markers around certain markup elements when you place your
-cursor inside of them. No more fumbling around with = and *
-characters!
+*** IGNORE Better spacing between org-levels with org-padding
 
 #+begin_src emacs-lisp
-  (use-package org-appear
-    :hook (org-mode . org-appear-mode))
+    (use-package org-padding
+
+      :disabled
+
+      :straight (:host github :repo "TonCherAmi/org-padding")
+
+      :config
+
+      (setq
+       ;; padding on top and bottom of source blocks
+       org-padding-block-begin-line-padding '(1.0 . nil)
+       org-padding-block-end-line-padding '(nil . 1.0)
+
+       ;; padding for org-headers
+       org-padding-heading-padding-alist
+            '((2.0 . 2.0) (2.0 . 2.0) (2.0 . 2.0) (2.0 . 2.0) (2.0 . 2.0) (2.0 . 2.0) (2.0 . 2.0) (2.0 . 2.0)))
+
+      :hook (org-mode . org-padding-mode)
+      )
 #+end_src
 
-
-** Sources for agenda tasks
+*** Sources for agenda tasks
 
 Generates an agenda from wildcarded org files from the specified
 directory
@@ -2397,10 +2316,7 @@ directory
   ;;       (file-expand-wildcards "~/org/*.org"))
 #+end_src
 
-
-** Display features
-
-
+*** Display features
 
 *** Autoindent/autofill turned on automatically
 
@@ -2411,7 +2327,6 @@ directory
   ;; organise paragraphs automatically
   (add-hook 'org-mode-hook 'turn-on-auto-fill)
 #+end_src
-
 
 *** Tags and todo-keywords config
 
@@ -2438,8 +2353,6 @@ classifying stuff by the general theme of what's being talked about.
                         )))
 #+end_src
 
-
-
 *** TODO Capture templates
 
 This will need to be looked at carefully. Roughly, I need to work out
@@ -2449,8 +2362,6 @@ this for entering entries into ~org-journal~, making it a whole deal
 easier. Perhaps to start off, [[https://orgmode.org/worg/org-tutorials/index.html][the org-mode tutorial]] might be a good
 place to start. I've also got a simple enough config from a reddit
 post in my [[file:person_el/sample-org-setup.el][unused local elisp libs]] too.
-
-
 
 *** Bullets for non ordered list
 
@@ -2468,8 +2379,6 @@ post in my [[file:person_el/sample-org-setup.el][unused local elisp libs]] too.
     ;; heading that has a :TOC: tag.
 #+end_src
 
-
-
 *** =Table of contents= for org-mode files
 
 #+begin_src emacs-lisp
@@ -2484,7 +2393,6 @@ Alternatively
 (use-package org-make-toc
   :hook (org-mode . org-make-toc-mode))
 #+end_src
-
 
 *** IGNORE Rougier's svg-tag-mode
 
@@ -2576,7 +2484,6 @@ Alternatively
     )
 #+end_src
 
-
 *** Hide all stars
 
 Leading or otherwise; procured from [[https://www.reddit.com/r/emacs/comments/9wukv8/hide_all_stars_in_org_mode/e9pkggv/][this answer on reddit]].
@@ -2598,7 +2505,6 @@ Leading or otherwise; procured from [[https://www.reddit.com/r/emacs/comments/9w
      (org-mode-hook . org-mode-hide-stars)
      )
 #+end_src
-
 
 *** Minad's modern UI for org-mode (fork)
 
@@ -2628,7 +2534,8 @@ Leading or otherwise; procured from [[https://www.reddit.com/r/emacs/comments/9w
           org-insert-heading-respect-content t
 
           ;; configuration
-          org-modern-hide-stars t)
+          ;; org-modern-hide-stars t
+          )
 
     ;; :hook
     ;; (org-mode . org-modern-mode)
@@ -2637,12 +2544,35 @@ Leading or otherwise; procured from [[https://www.reddit.com/r/emacs/comments/9w
     )
 #+end_src
 
+*** Org-superstar
+
+#+begin_src emacs-lisp :tangle no
+  (use-package org-superstar
+    :after org
+    :hook (org-mode . org-superstar-mode)
+    :custom
+    (org-superstar-remove-leading-stars t)
+    ;;(org-superstar-headline-bullets-list '("◉" "○" "●" "○" "●" "○" "●"))
+    )
+#+end_src
+
+*** Display emphasis markers on hover
+
+This package makes it much easier to edit Org documents when
+org-hide-emphasis-markers is turned on. It temporarily shows the
+emphasis markers around certain markup elements when you place your
+cursor inside of them. No more fumbling around with = and *
+characters!
+
+#+begin_src emacs-lisp
+  (use-package org-appear
+    :hook (org-mode . org-appear-mode))
+#+end_src
 
 ** TODO Org-Babel for literate programming
 
 Org-mode needs org-babel, ob-tangle, live pdf/html preview within
 Emacs, hooks to enable auto-fill, linum-mode (?)
-
 
 ** IN-PROGRESS org-roam
 
@@ -2655,7 +2585,6 @@ I'm sure this reaches some tangible stage of completion.
 (use-package org-roam
   :straight t)
 #+end_src
-
 
 ** TODO Journaling requirements
 
@@ -2687,8 +2616,6 @@ just make this workable with the termux version of Emacs.
     )
 #+end_src
 
-
-
 ** TODO [[https://github.com/bdarcus/citar][Citar]] for reference management?
 
 If I ever get down to writing papers, of course, I'd write them in
@@ -2714,8 +2641,6 @@ simpler/. [[https://www.youtube.com/watch?v=2t925KRBbFc][Introduction to org-ref
     ;;(:map org-mode-map :package org ("C-c b" . #'org-cite-insert)))
 #+end_src
 
-
-
 ** org-present for presentations
 
 See [[https://github.com/daviwil/dotfiles/blob/9776d65c4486f2fa08ec60a06e86ecb6d2c40085/Emacs.org#presentations][dawiwil's section on this]] from his literate init for more about
@@ -2723,7 +2648,6 @@ this.
 
 
 * Multimedia
-
 
 ** EMMS for music
 
@@ -2743,7 +2667,6 @@ this.
     )
 #+end_src
 
-
 ** mpv for video
 
 #+begin_src emacs-lisp
@@ -2755,21 +2678,17 @@ this.
 
 Got most of these from [[https://github.com/daviwil/dotfiles/blob/9776d65c4486f2fa08ec60a06e86ecb6d2c40085/Emacs.org][daviwil]]'s literate configuration
 
-
 ** Gemini
 
 #+begin_src emacs-lisp
   (use-package elpher)
 #+end_src
 
-
 ** TODO mail with mu4e
 
 see [[https://github.com/daviwil/dotfiles/blob/9776d65c4486f2fa08ec60a06e86ecb6d2c40085/Mail.org][daviwil's mail.org]] and the configuration in his [[https://github.com/daviwil/dotfiles/blob/9776d65c4486f2fa08ec60a06e86ecb6d2c40085/Emacs.org#mail][literate config]].
 
-
 ** TODO Browser
-
 
 ** Elfeed for RSS
 
@@ -2788,7 +2707,6 @@ see [[https://github.com/daviwil/dotfiles/blob/9776d65c4486f2fa08ec60a06e86ecb6d
 
 * UI configuration
 
-
 ** Highlighted line-mode
 
 #+name: cursorline
@@ -2796,7 +2714,6 @@ see [[https://github.com/daviwil/dotfiles/blob/9776d65c4486f2fa08ec60a06e86ecb6d
   ;; cursorline
   (global-hl-line-mode 1)
 #+end_src
-
 
 ** Solid window dividers
 
@@ -2811,7 +2728,6 @@ see [[https://github.com/daviwil/dotfiles/blob/9776d65c4486f2fa08ec60a06e86ecb6d
   (add-hook 'after-init-hook #'window-divider-mode)
 #+end_src
 
-
 ** Something about underlines
 
 Underline line at descent position, not baseline position
@@ -2820,13 +2736,11 @@ Underline line at descent position, not baseline position
   (setq x-underline-at-descent-line t)
 #+end_src
 
-
 ** IGNORE figure this out too - No ugly button for checkboxes
 
 #+begin_src emacs-lisp :tangle no
   (setq widget-image-enable nil)
 #+end_src
-
 
 ** Cursor configuration
 
@@ -2835,13 +2749,11 @@ Underline line at descent position, not baseline position
   (blink-cursor-mode 1)
 #+end_src
 
-
 ** Line-number format
 
 #+begin_src emacs-lisp
         (setq linum-format "%4d ")
   #+end_src
-
 
 ** Visual not audible bell
 
@@ -2856,14 +2768,11 @@ Flashes modeline for warnings from [[https://github.com/purcell/mode-line-bell][
       (mode-line-bell-mode))
 #+end_src
 
-
-
 ** No Tooltips
 
 #+begin_src emacs-lisp
   (tooltip-mode 0)
 #+end_src
-
 
 ** Minibuffer appearance?
 
@@ -2887,7 +2796,6 @@ perhaps give it a shot.
               (minibuffer . only)))
 #+end_src
 
-
 ** Fringe
 
 No fringe but nice glyphs for truncated and wrapped lines
@@ -2896,8 +2804,6 @@ No fringe but nice glyphs for truncated and wrapped lines
   (fringe-mode '(0 . 0))
 #+end_src
 
-
-
 ** Minimalist and ordered mode-line
 
 People seem to use packages for this. I've considered using the
@@ -2905,7 +2811,6 @@ People seem to use packages for this. I've considered using the
 and I'd like a mode-line with a much more fundamental interface
 although it's still a good contender considering it's very simple to
 configure. I'm also considering [[https://github.com/gexplorer/simple-modeline][simple-mode-line]].
-
 
 ** IN-PROGRESS Lambda modeline
 #+name: lamdba-modeline :tangle no
@@ -2954,7 +2859,6 @@ configure. I'm also considering [[https://github.com/gexplorer/simple-modeline][
      (setq mode-line-format (list "%_"))))
 #+end_src
 
-
 *** IN-PROGRESS Mood-line because I'm fucking tired
 
 #+begin_src emacs-lisp
@@ -2964,9 +2868,7 @@ configure. I'm also considering [[https://github.com/gexplorer/simple-modeline][
     )
 #+end_src
 
-
 ** Font configuration
-
 
 *** Setting a font
 
@@ -3000,8 +2902,6 @@ configure. I'm also considering [[https://github.com/gexplorer/simple-modeline][
 
 #+end_src
 
-
-
 *** Line spacing
 
 Usually 0, less if possible but Emacs doesn't allow for that.
@@ -3011,9 +2911,7 @@ Usually 0, less if possible but Emacs doesn't allow for that.
   (setq-default line-spacing 0)
 #+end_src
 
-
 ** Editor theme
-
 
 *** IGNORE Initial config for moody I guess
 
@@ -3029,8 +2927,6 @@ sure it works this way.
     (set-face-attribute 'mode-line-inactive nil :box nil)
     (set-face-attribute 'mode-line-inactive nil :box nil))
 #+end_src
-
-
 
 *** Externally sourced
 
@@ -3260,9 +3156,6 @@ An elegant theme highlighting comments only
     )
 #+end_src
 
-
-
-
 *** IN-PROGRESS My themes (LOL)
 
 Neither of these work using =straight.el= or =use-package=, together
@@ -3280,7 +3173,6 @@ themes of my own that use this macro.
     ;;(load-theme 'beelzebub t)
     )
 #+end_src
-
 
 *** Pulse to locate cursor with Protesilaos's pulsar
 
