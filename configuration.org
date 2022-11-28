@@ -320,11 +320,11 @@ desperately avoiding having to debug init any further.
         ;; fontify code in code blocks
         org-src-fontify-natively t
         org-fontify-quote-and-verse-blocks t
-        org-src-tab-acts-natively t
+        ;; org-src-tab-acts-natively t
 
        ;; org-edit-src-content-indentation 2
        org-hide-block-startup nil
-       org-src-preserve-indentation nil
+       ;; org-src-preserve-indentation nil
 
        ;; allow for increased space between org
        ;; org-cycle-separator-lines -1
@@ -340,7 +340,7 @@ desperately avoiding having to debug init any further.
        org-hide-leading-stars t
 
        ;; display numbers instead of bullets for headings
-       org-num-mode t
+       ;; org-num-mode t
 
        ;; faster (single-key) navigation in org-mode
        ;; type `?' for help
@@ -676,11 +676,49 @@ Emacs, hooks to enable auto-fill, linum-mode (?)
                       (lisp        . t)
                       (org         . t)
                       (sh          . t)
-                      (R           . t))
+                      (R           . t)))
 #+end_src
 
 
-* TODO [[https://github.com/bdarcus/citar][Citar]] for reference management?
+* Header
+
+Just the usual header for elisp files that Emacs keeps complaining
+about.
+
+#+begin_src emacs-lisp
+      ;;; configuration.el --- Initialisation. -*- lexical-binding: t; -*-
+
+  ;; Copyright (C) 2022 peregrinator
+
+  ;; Author: peregrinator <brihadeesh@protonmail.com>
+  ;; URL: https://git.sr.ht/~peregrinator/.emacs.d
+  ;; Package-Requires: ((emacs "28.1"))
+
+  ;; This file is NOT part of GNU Emacs.
+
+  ;; This file is free software: you can redistribute it and/or modify
+  ;; it under the terms of the GNU General Public License as published
+  ;; by the Free Software Foundation, either version 3 of the License,
+  ;; or (at your option) any later version.  This file is distributed in
+  ;; the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+  ;; even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+  ;; PARTICULAR PURPOSE.  See the GNU General Public License for more
+  ;; details.  You should have received a copy of the GNU General Public
+  ;; License along with this file.  If not, see
+  ;; <http://www.gnu.org/licenses/>.
+
+
+      ;;; Commentary:
+  ;; This file provides the initialization configuration tangled this
+  ;; file.
+
+
+      ;;; Code:
+#+end_src
+
+* TODO Citar for reference management?
+
+[[https://github.com/bdarcus/citar][Citar]]
 
 If I ever get down to writing papers, of course, I'd write them in
 ~org-mode~ or LaTeX so this should be useful considering =Mendeley
@@ -727,7 +765,7 @@ cluttered and excruciatingly tedious to even get started with.
 ** Basic setup
 #+begin_src emacs-lisp
   (use-package denote
-      :straight (:host github :repo "protesilaos/denote")
+      :straight (:source gnu-elpa-mirror)
 
     :config
     ;; Remember to check the doc strings of those variables.
@@ -921,7 +959,8 @@ This source block continues into the next section.
                          `(
                            ,(concat "* TODO " title)
                            ":PROPERTIES:"
-                           ,(concat ":EXPORT_FILE_NAME: " fname)
+                           ,(concat ":EXPORT_HUGO_BUNDLE: " fname)
+                           ":EXPORT_FILE_NAME: index"
                            ":EXPORT_HUGO_AUTO_SET_LASTMOD: t"
                            ":END:"
                            "%?\n")          ;Place the cursor here finally
@@ -957,14 +996,14 @@ Capture for blog posts
                   "Hugo blog post"
                   entry
                   (file+olp "~/my_gits/brihadeesh.github.io/content-org/blog/posts.org" "Posts")
-                  (function org-hugo-new-subtree-post-capture-template))))
+                  (function org-hugo-new-subtree-post-capture-template)))))
 
 #+end_src
 
 
 Capture for posts on eBird analyses
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 
   (add-to-list 'org-capture-templates
                   '("r"                ;`org-capture' binding + r
@@ -1963,19 +2002,74 @@ RMarkdown and org-mode is generally better (see next bit for RMarkdown)
 #+end_src
 
 
-** DISABLED Polymode for RMarkdown syntax
-:PROPERTIES:
-:header-args: :tangle no
-:VISIBILITY: folded
-:END:
+*** TODO Polymodes for R
 
-#+begin_src emacs-lisp
-  (use-package poly-R)
-  ;; :ensure t
-  (add-to-list 'auto-mode-alist '("\\.md" . poly-markdown-mode))
-  (add-to-list 'auto-mode-alist '("\\.Rmd" . poly-ess-help+R-mode))
+This helps integrate ESS into markdown so editing RMarkdown files is
+easy. As an added benefit syntax for regular markdown files is
+supported. I won't have to install =polymode= itself explicitly since
+it's a dependency for the =poly-R= modes and will be pulled
+automatically. I do vaguely remember some issues this caused, will
+have to
+
+  #+begin_src emacs-lisp
+    (use-package poly-R
+      :config
+      (add-to-list 'auto-mode-alist '("\\.md" . poly-markdown-mode))
+      (add-to-list 'auto-mode-alist '("\\.Rmd" . poly-markdown+r-mode))
+
+      :hook
+      (poly-markdown-mode . flyspell-mode)
+      (poly-markdown-mode . visual-line-mode)
+      (poly-markdown-mode . auto-fill-mode))
 #+end_src
 
+*** TODO defining org-skeleton for org-babel + R
+
+Got this from [[https://orgmode.org/worg/org-contrib/babel/how-to-use-Org-Babel-for-R.html][worg documentation]] but I vaguely remember reading about
+more options for individual source blocks so will have to change /
+append accordingly. This defines a skeleton or a format for an org
+file header that's specific to writing and running R code. It's bound
+to a keybind so it can be accessed easily on opening a fresh org-babel
+document.
+
+The other resource was: [[https://orgmode.org/worg/org-contrib/babel/languages/ob-doc-R.html][R source blocks in Org Mode]]
+
+More info from the page:
+
+1. The =#+INFOJS_OPT= option will generate a HTML document that is
+   foldable and follows the style of GNU/INFO document.
+2. The =:session *R*= option makes sure all the R code is run in the same
+   session so objects generated in one code block can be accessed from
+   other code blocks.
+3. the =:cache yes= option is used to avoid re-evaluating unchanged code
+   blocks. This can save significant time when you revise a document
+   with a lot of R code frequently.
+4. The =:results output graphics :exports both= option will put both the
+   R code and its text and graphics output in the generated document.
+5. The =:tangle yes= option allows the document to be "tangled" to
+   generate pure code file. The short-cut key for tangling is =C-c C-v
+   t=, which generates a .R file with all the R code extracted.
+6. Note the =–—= string will generate a horizontal line in HTML file.
+7. Finally, a hotkey =C-S-f4= (while pressing Ctrl and Shift keys, press
+   F4 key) is assigned to invoke this skeleton quickly.
+
+
+#+begin_src emacs-lisp
+
+  (define-skeleton org-skeleton
+    "Header info for a emacs-org file."
+    "Title: "
+    "#+TITLE:" str " \n"
+    "#+AUTHOR: Brihaadeesh S \n"
+    "#+email: brihadeesh.santharam@gmail.com\n"
+    "#+INFOJS_OPT: \n"
+    "#+BABEL: :session *R* :cache yes :results output graphics :exports both :tangle yes \n"
+    "-----"
+   )
+
+  (global-set-key [C-S-f4] 'org-skeleton)
+
+#+end_src
 
 ** C and C++ ???
 
@@ -2598,7 +2692,10 @@ Focuses new windows when created.
               compilation-mode
               ;; magit stuff
               "^magit:*" magit-mode
-              "^\\*Ilist\\*$"))
+              "^\\*Ilist\\*$"
+              ;; R console that comes with ESS
+              "^\\*iESS" iESS-mode
+              ))
 
       ;;grouping popups by projectile groups
       (setq popper-group-function #'popper-group-by-projectile)
@@ -3448,4 +3545,10 @@ Usually 0, less if possible but Emacs doesn't allow for that.
 #+begin_src emacs-lisp
   ;; Line spacing, can be 0 for code and 1 or 2 for text
   (setq-default line-spacing 0.1)
+#+end_src
+
+* footer
+
+#+begin_src emacs-lisp
+ ;;; configuration.el ends here
 #+end_src

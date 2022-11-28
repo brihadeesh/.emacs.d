@@ -79,17 +79,30 @@
 (straight-use-package 'org-contrib)
 
 
-;; Load configuration.org
-(when (file-readable-p
-	   (concat user-emacs-directory "configuration.org"))
-  (org-babel-load-file
-   (concat user-emacs-directory "configuration.org")))
-
 ;; WHY?
 ;; Restore original GC values
 ;; (add-hook 'emacs-startup-hook
 ;; 		  (lambda ()
 ;; 			(setq gc-cons-threshold gc-cons-threshold-original)
 ;; 			(setq gc-cons-percentage gc-cons-percentage-original)))
+
+
+;; Tangle the file if needed
+(let* ((default-directory user-emacs-directory)
+       (org-file "configuration.org")
+       (el-file "configuration.el")
+       (changed-at (file-attribute-modification-time (file-attributes org-file))))
+  (require 'org-macs)
+  (unless (org-file-newer-than-p el-file changed-at)
+    (require 'ob-tangle)
+    (org-babel-tangle-file org-file el-file "emacs-lisp"))
+  (load-file el-file))
+
+
+;; Load configuration.org
+(when (file-readable-p
+       (concat user-emacs-directory "configuration.org"))
+  (org-babel-load-file
+   (concat user-emacs-directory "configuration.org")))
 
 ;;; init.el ends here
