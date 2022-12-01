@@ -16,7 +16,7 @@ This was created on <2021-12-04 Sat> and the date above reflects when
 the last modification was made.
 
 
-* Other config files
+* Other init files
 :PROPERTIES:
 :header-args: :tangle no
 :VISIBILITY: folded
@@ -31,56 +31,57 @@ from Protesilaos some time back. It still needs work - it's not
 tangled (by default) yet.
 
 #+begin_src emacs-lisp :file ~/.emacs.d/early-init.el :tangle no
-    ;;; early-init.el --- Early Init File -*- lexical-binding: t -*-
 
-    ;; Copyright (c) 2021-2022 pereginator
+      ;;; early-init.el --- Early Init File -*- lexical-binding: t -*-
 
-;; Author: peregrinator <brihadeesh@protonmail.com>
+  ;; Copyright (c) 2021-2022 pereginator
+
+  ;; Author: peregrinator <brihadeesh@protonmail.com>
   ;; URL: https://git.sr.ht/~peregrinator/dotfiles Version: 0.1.0
-    ;; Package-Requires: ((emacs "28.1"))
+  ;; Package-Requires: ((emacs "28.1"))
 
-    ;; This file is NOT part of GNU Emacs.
+  ;; This file is NOT part of GNU Emacs.
 
-    ;; This file is free software: you can redistribute it and/or modify
-    ;; it under the terms of the GNU General Public License as published
-    ;; by the Free Software Foundation, either version 3 of the License,
-    ;; or (at your option) any later version.  This file is distributed in
-    ;; the hope that it will be useful, but WITHOUT ANY WARRANTY; without
-    ;; even the implied warranty of MERCHANTABILITY or FITNESS FOR A
-    ;; PARTICULAR PURPOSE.  See the GNU General Public License for more
-    ;; details.  You should have received a copy of the GNU General Public
-    ;; License along with this file.  If not, see
-    ;; <http://www.gnu.org/licenses/>.
+  ;; This file is free software: you can redistribute it and/or modify
+  ;; it under the terms of the GNU General Public License as published
+  ;; by the Free Software Foundation, either version 3 of the License,
+  ;; or (at your option) any later version.  This file is distributed in
+  ;; the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+  ;; even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+  ;; PARTICULAR PURPOSE.  See the GNU General Public License for more
+  ;; details.  You should have received a copy of the GNU General Public
+  ;; License along with this file.  If not, see
+  ;; <http://www.gnu.org/licenses/>.
 
-    ;;; Commentary:
+      ;;; Commentary:
 
-    ;; Prior to Emacs 27, the `init.el' was supposed to handle the
-    ;; initialisation of the package manager, by means of calling
-    ;; `package-initialize'.  Starting with Emacs 27, the default
-    ;; behaviour is to start the package manager before loading the init
-    ;; file.
+  ;; Prior to Emacs 27, the `init.el' was supposed to handle the
+  ;; initialisation of the package manager, by means of calling
+  ;; `package-initialize'.  Starting with Emacs 27, the default
+  ;; behaviour is to start the package manager before loading the init
+  ;; file.
 
-    ;;; Code:
+      ;;; Code:
 
-    ;; Don't initialise installed packages cause package.el sucks balls
-    (setq package-enable-at-startup nil)
+  ;; Don't initialise installed packages cause package.el sucks balls
+  (setq package-enable-at-startup nil)
 
-    ;; Do not resize the frame at this early stage.  (setq
-    frame-inhibit-implied-resize t)
+  ;; Do not resize the frame at this early stage.  (setq
+  frame-inhibit-implied-resize t)
 
-    ;; Disable GUI elements ; Disable menu-bar, tool-bar, and scroll-bar.
-    ;;(if (fboundp 'menu-bar-mode) (menu-bar-mode -1)) (if (fboundp
-    ;;'tool-bar-mode) (tool-bar-mode -1)) (if (fboundp 'scroll-bar-mode)
-    ;;(scroll-bar-mode -1)) (setq inhibit-splash-screen t) (setq
-    ;;use-dialog-box nil) ; only for mouse events (setq use-file-dialog
-    ;;nil)
+  ;; Disable GUI elements ; Disable menu-bar, tool-bar, and scroll-bar.
+  ;;(if (fboundp 'menu-bar-mode) (menu-bar-mode -1)) (if (fboundp
+  ;;'tool-bar-mode) (tool-bar-mode -1)) (if (fboundp 'scroll-bar-mode)
+  ;;(scroll-bar-mode -1)) (setq inhibit-splash-screen t) (setq
+  ;;use-dialog-box nil) ; only for mouse events (setq use-file-dialog
+  ;;nil)
 
-    (setq inhibit-startup-screen t) (setq inhibit-startup-buffer-menu t)
+  (setq inhibit-startup-screen t) (setq inhibit-startup-buffer-menu t)
 
-    ;; for when I upgrade to emacs28 with native compilation (setq
-    native-comp-async-report-warnings-errors nil)
+  ;; for when I upgrade to emacs28 with native compilation (setq
+  native-comp-async-report-warnings-errors nil)
 
-    ;;; early-init.el ends here
+      ;;; early-init.el ends here
 #+end_src
 
 
@@ -90,101 +91,178 @@ I've changed things up a little - this now includes the package
 management code and the code for =org= installation.
 
 #+begin_src emacs-lisp :file ~/.emacs.d/init.el
-;;; init.el --- Initialization. -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2022 peregrinator
-;; This file is NOT part of GNU Emacs.
-;; This file is free software.
+  ;;; init.el --- Initialization. -*- lexical-binding: t; -*-
 
-;; Author: peregrinator <brihadeesh@protonmail.com>
-;; URL: https://git.sr.ht/~peregrinator/.emacs.d
-;; Package-Requires: ((emacs "28.1"))
+  ;; Copyright (C) 2022 peregrinator
+  ;; This file is NOT part of GNU Emacs.
+  ;; This file is free software.
 
-;;; Commentary:
-;; This file provides the initialization configuration.
+  ;; Author: peregrinator <brihadeesh@protonmail.com>
+  ;; URL: https://git.sr.ht/~peregrinator/.emacs.d
+  ;; Package-Requires: ((emacs "28.1"))
 
-;;; Code:
+  ;;; Commentary:
+  ;; This file provides the initialization configuration.
 
-;; Make emacs startup faster
-(defvar startup/file-name-handler-alist file-name-handler-alist)
-(setq file-name-handler-alist nil)
-(defun startup/revert-file-name-handler-alist ()
-  "Revert file name handler alist."
-  (setq file-name-handler-alist startup/file-name-handler-alist))
-(add-hook 'emacs-startup-hook 'startup/revert-file-name-handler-alist)
+  ;;; Code:
 
-;; For performance
-(setq read-process-output-max (* 1024 1024)) ;; 1mb
-(setq process-adaptive-read-buffering nil)
+  ;; Make emacs startup faster
+  (defvar startup/file-name-handler-alist file-name-handler-alist)
+  (setq file-name-handler-alist nil)
+  (defun startup/revert-file-name-handler-alist ()
+    "Revert file name handler alist."
+    (setq file-name-handler-alist startup/file-name-handler-alist))
+  (add-hook 'emacs-startup-hook 'startup/revert-file-name-handler-alist)
 
-;; Load newer .elc or .el
-(setq load-prefer-newer t)
+  ;; For performance
+  (setq read-process-output-max (* 1024 1024)) ;; 1mb
+  (setq process-adaptive-read-buffering nil)
 
+  ;; Load newer .elc or .el
+  (setq load-prefer-newer t)
 
-;;; Configure `straight.el'
-;; fetch developmental version of `straight.el'
-(setq straight-repository-branch "develop"
+  #+end_src
 
-      ;; redirect all package repos and builddirs elsewhere
-      straight-base-dir "~/.cache/")
+*** Package management
 
-
-;; Bootstrap straight.el
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name "straight/repos/straight.el/bootstrap.el" "~/.cache"))
-      (bootstrap-version 6))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-	(url-retrieve-synchronously
-	 "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-	 'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
-
-;;; Configure straight.el (contd.)
-;; make all use-package instances use straight.el
-(setq straight-use-package-by-default t
-
-      ;; clone depth (probably to save space)
-      straight-vc-git-default-clone-depth 1
-
-      ;; Define when to check for package modifications,
-      ;; for improved straight.el startup time.
-      straight-check-for-modifications nil
-
-      ;; use elpa
-      straight-recipes-gnu-elpa-use-mirror t
-
-      straight-host-usernames
-      '((github . "brihadeesh")
-	(gitlab . "peregrinator")))
-
-;; Install use-package with straight.el
-(straight-use-package 'use-package)
+Update: <2022-11-21 Mon>
+I've moved all of this and some other stuff (garbage collection etc)
+to the =init.el=. See the initial org-mode installation section below
+for more.
 
 
-;; install org & org-contrib
-(straight-use-package 'org)
-;; (require 'org)
-(straight-use-package 'org-contrib)
+
+**** Setup ~straight.el~
+
+I'll be using ~use-package~ to organise and configure individual
+packages into neater code blocks although the download will be handled
+by ~straight.el~. I've included the org-installation here since there's somehow always
+an issue with version mismatch.
+
+  #+begin_src emacs-lisp :file ~/.emacs.d/init.el
+
+    ;;; Configure `straight.el'
+    ;; fetch developmental version of `straight.el'
+    (setq straight-repository-branch "develop"
+
+          ;; redirect all package repos and builddirs elsewhere
+          straight-base-dir "~/.cache/")
 
 
-;; Load configuration.org
-(when (file-readable-p
-	   (concat user-emacs-directory "configuration.org"))
-  (org-babel-load-file
-   (concat user-emacs-directory "configuration.org")))
+    ;; Bootstrap straight.el
+    (defvar bootstrap-version)
+    (let ((bootstrap-file
+           (expand-file-name "straight/repos/straight.el/bootstrap.el" "~/.cache"))
+          (bootstrap-version 6))
+      (unless (file-exists-p bootstrap-file)
+        (with-current-buffer
+            (url-retrieve-synchronously
+             "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+             'silent 'inhibit-cookies)
+          (goto-char (point-max))
+          (eval-print-last-sexp)))
+      (load bootstrap-file nil 'nomessage))
 
-;; WHY?
-;; Restore original GC values
-;; (add-hook 'emacs-startup-hook
-;; 		  (lambda ()
-;; 			(setq gc-cons-threshold gc-cons-threshold-original)
-;; 			(setq gc-cons-percentage gc-cons-percentage-original)))
+    ;;; Configure straight.el (contd.)
+    ;; make all use-package instances use straight.el
+    (setq straight-use-package-by-default t
 
-;;; init.el ends here
+          ;; clone depth (probably to save space)
+          straight-vc-git-default-clone-depth 1
+
+          ;; Define when to check for package modifications,
+          ;; for improved straight.el startup time.
+          straight-check-for-modifications nil
+
+          ;; use elpa
+          straight-recipes-gnu-elpa-use-mirror t
+
+          straight-host-usernames
+          '((github . "brihadeesh")
+            (gitlab . "peregrinator")))
+
+#+end_src
+
+
+**** Install and configure =use-package=
+
+~use-package~ is installed and managed by =straight.el= and in turn
+packages used in this config are managed/organized by
+~use-package~. There's something to do with integration with ~use-package~
+on the [[https://github.com/raxod502/straight.el/blob/develop/README.md#integration-with-use-package][straight.el readme]]
+
+#+begin_src emacs-lisp :file ~/.emacs.d/init.el
+
+  ;; Install use-package with straight.el
+  (straight-use-package 'use-package)
+
+#+end_src
+
+
+**** DISABLED Use-package v2 related changes
+:PROPERTIES:
+:VISIBILITY: folded
+:END:
+
+Need to figure this out - I think maybe ~use-package~ might not be updated
+
+#+begin_src emacs-lisp :file ~/.emacs.d/init.el
+
+  (eval-when-compile
+    (require 'use-package))
+  (require 'diminish)
+  (require 'bind-key)
+
+#+end_src
+
+
+**** DISABLED Minimal ~package.el~ setup only to browse packages
+:PROPERTIES:
+:VISIBILITY: folded
+:END:
+
+Running =package-list-packages= includes them only for browsing
+
+#+begin_src emacs-lisp :file ~/.emacs.d/init.el
+
+  (require 'package)
+  (add-to-list 'package-archives
+               '("melpa" . "https://melpa.org/packages/"))
+
+#+end_src
+
+
+*** Initial Org-mode installation
+
+I use the latest version of Org, pulled from the =gnu-elpa= repositories
+and have to install it early on so =straight.el= / =use-package= don't
+give me trouble with version conflicts because it loads the built in
+(older) version first.
+
+#+begin_src emacs-lisp :file ~/.emacs.d/init.el
+
+  ;; install org & org-contrib
+  (straight-use-package 'org)
+  ;; (require 'org)
+  (straight-use-package 'org-contrib)
+
+
+  ;; Load configuration.org
+  (when (file-readable-p
+         (concat user-emacs-directory "configuration.org"))
+    (org-babel-load-file
+     (concat user-emacs-directory "configuration.org")))
+
+#+end_src
+
+
+*** End
+
+#+begin_src emacs-lisp :file ~/.emacs.d/init.el
+
+  ;;; init.el ends here
+
 #+end_src
 
 
@@ -222,111 +300,6 @@ about.
 
 
       ;;; Code:
-#+end_src
-
-
-* DISABLED Package management
-:PROPERTIES:
-:header-args: :tangle no
-:VISIBILITY: folded
-:END:
-
-Update: <2022-11-21 Mon>
-I've moved all of this and some other stuff (garbage collection etc) to the =init.el=
-
-** Setup ~straight.el~
-
-I'll be using ~use-package~ to organise and configure individual
-packages into neater code blocks although the download will be handled
-by ~straight.el~. I've included the org-installation here since there's somehow always
-an issue with version mismatch.
-
-#+name: straight-setup
-#+begin_src emacs-lisp
-  ;; make all use-package instances use straight.el
-  (setq straight-use-package-by-default t)
-
-  ;; fetch developmental version of straight.el
-  (setq straight-repository-branch "develop")
-
-  ;; redirect all package repos and builddirs elsewhere
-  (setq straight-base-dir "~/.cache/straight")
-#+end_src
-
-
-Bootstrap straight.el
-
-#+begin_src emacs-lisp
-
-  (defvar bootstrap-version)
-  (let ((bootstrap-file
-	 (expand-file-name "straight/repos/straight.el/bootstrap.el" "~/.cache"))
-	(bootstrap-version 5))
-    (unless (file-exists-p bootstrap-file)
-      (with-current-buffer
-	  (url-retrieve-synchronously
-	   "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-	   'silent 'inhibit-cookies)
-	(goto-char (point-max))
-	(eval-print-last-sexp)))
-    (load bootstrap-file nil 'nomessage))
-
-  ;; org
-  (straight-use-package 'org)
-  (require 'org)
-  (straight-use-package 'org-contrib)
-#+end_src
-
-*** Prevent older org-mode versions from being loaded
-
-Check [[https://www.reddit.com/r/emacs/comments/qcj33a/problem_and_workaround_with_orgmode_function/hhmmskg/][this reddit post]] which I found thankfully.
-
-#+begin_src emacs-lisp
-   ;; (straight-use-package 'org)
-
-   ;; (straight-use-package 'org-contrib)
-
-#+end_src
-
-
-** Install and configure =use-package=
-
-~use-package~ is installed and managed by =straight.el= and in turn
-packages used in this config are managed/organized by
-~use-package~. There's something to do with integration with ~use-package~
-on the [[https://github.com/raxod502/straight.el/blob/develop/README.md#integration-with-use-package][straight.el readme]]
-
-#+name: use-use-package
-#+begin_src emacs-lisp
-  (straight-use-package 'use-package)
-  (setq straight-host-usernames
-        '((github . "brihadeesh")
-          (gitlab . "peregrinator")
-          (bitbucket . "peregrinator")))
-  (setq straight-check-for-modifications nil)
-#+end_src
-
-
-*** DISABLED Use-package v2 related changes
-
-Need to figure this out - I think maybe ~use-package~ might not be updated
-
-#+begin_src emacs-lisp
-  (eval-when-compile
-    (require 'use-package))
-  (require 'diminish)
-  (require 'bind-key)
-#+end_src
-
-
-** Minimal ~package.el~ setup only to browse packages
-
-Running =package-list-packages= includes them only for browsing
-
-#+begin_src emacs-lisp
-  (require 'package)
-  (add-to-list 'package-archives
-               '("melpa" . "https://melpa.org/packages/"))
 #+end_src
 
 
@@ -2118,10 +2091,7 @@ error with Modus themes: =Debugger entered--Lisp error: (wrong-number-of-argumen
 loaded before =custom.el= is pulled in to avoid issues with version
 mismatch like the shit with the =org= package.
 
-
-*** Externally sourced
-
-**** Modus from Protesilaos!
+*** Modus from Protesilaos!
 
 This might need additional setting since modus themes are now included
 within Emacs
@@ -2190,11 +2160,45 @@ within Emacs
 
 #+end_src
 
-**** DISABLED Wilmersdorf
+*** Commentary
+
+An elegant theme highlighting comments only
+
+#+begin_src emacs-lisp
+
+  (use-package commentary-theme
+    ;;:config
+    ;;(load-theme 'commentary t)
+    )
+
+#+end_src
+
+*** My themes
+
+Neither of these work using =straight.el= or =use-package=, together
+or separately (afaik). If these work, I could maybe add some more of
+my own.
+
+Forked from the [[https://github.com/lthms/colorless-themes][colorless-themes macro]]. This includes my version of
+the macro, original themes from Thomas Letan, and some additional
+themes of my own that use this macro.
+
+#+begin_src emacs-lisp
+
+  (use-package colourless-themes
+      :straight (:host gitlab :repo "peregrinator/colourless-themes-el")
+      ;;:config
+      ;;(load-theme 'beelzebub t)
+      )
+
+#+end_src
+
+*** DISABLED unused
 :PROPERTIES:
 :header-args: :tangle no
 :VISIBILITY: folded
 :END:
+**** DISABLED Wilmersdorf
 
 I saw this on [[https://github.com/hlissner/emacs-doom-themes][doom-themes]] but I don't want to pull all of those just
 for this, so installing from it's [[https://github.com/ianyepan/wilmersdorf-emacs-theme][GitHub]] using ~straight.el~. But it
@@ -2210,10 +2214,6 @@ fails to load with ~use-package~ so I'm going to have to do it manually.
 #+end_src
 
 **** DISABLED Tao
-:PROPERTIES:
-:header-args: :tangle no
-:VISIBILITY: folded
-:END:
 
 Monochrome theme with minimal bold highlights and boxes?
 
@@ -2241,10 +2241,6 @@ Monochrome theme with minimal bold highlights and boxes?
 #+end_src
 
 **** DISABLED Github dark
-:PROPERTIES:
-:header-args: :tangle no
-:VISIBILITY: folded
-:END:
 
 #+begin_src emacs-lisp
   (use-package github-dark-vscode-theme
@@ -2258,10 +2254,6 @@ Monochrome theme with minimal bold highlights and boxes?
 #+end_src
 
 **** DISABLED Github modern (light)
-:PROPERTIES:
-:header-args: :tangle no
-:VISIBILITY: folded
-:END:
 
 #+begin_src emacs-lisp
   (use-package github-modern-theme
@@ -2271,10 +2263,6 @@ Monochrome theme with minimal bold highlights and boxes?
 #+end_src
 
 **** DISABLED Vale
-:PROPERTIES:
-:header-args: :tangle no
-:VISIBILITY: folded
-:END:
 
 #+begin_src emacs-lisp
   (use-package vale
@@ -2285,9 +2273,6 @@ Monochrome theme with minimal bold highlights and boxes?
 #+end_src
 
 **** DISABLED Parchment
-:PROPERTIES:
-:header-args: :tangle no
-:END:
 
 Based on the screenshot of Haskell code on the [[https://fsd.it/shop/fonts/pragmatapro/#tab-fb289adf-7c14-8][Pragmata Pro website]].
 
@@ -2300,10 +2285,6 @@ Based on the screenshot of Haskell code on the [[https://fsd.it/shop/fonts/pragm
 #+end_src
 
 **** DISABLED Almost mono
-:PROPERTIES:
-:header-args: :tangle no
-:VISIBILITY: folded
-:END:
 
 #+begin_src emacs-lisp
   (use-package almost-mono-themes
@@ -2316,10 +2297,7 @@ Based on the screenshot of Haskell code on the [[https://fsd.it/shop/fonts/pragm
 #+end_src
 
 **** DISABLED Stimmung themes for nearly monochrome appearance
-:PROPERTIES:
-:header-args: :tangle no
-:VISIBILITY: folded
-:END:
+
 
 #+begin_src emacs-lisp
   (use-package stimmung-themes
@@ -2328,37 +2306,6 @@ Based on the screenshot of Haskell code on the [[https://fsd.it/shop/fonts/pragm
     ;; (stimmung-themes-load-dark)
     )
 #+end_src
-
-**** Commentary
-
-An elegant theme highlighting comments only
-
-#+begin_src emacs-lisp
-  (use-package commentary-theme
-    ;;:config
-    ;;(load-theme 'commentary t)
-    )
-#+end_src
-
-
-*** My themes
-
-Neither of these work using =straight.el= or =use-package=, together
-or separately (afaik). If these work, I could maybe add some more of
-my own.
-
-Forked from the [[https://github.com/lthms/colorless-themes][colorless-themes macro]]. This includes my version of
-the macro, original themes from Thomas Letan, and some additional
-themes of my own that use this macro.
-
-#+begin_src emacs-lisp
-  (use-package colourless-themes
-    :straight (:host gitlab :repo "peregrinator/colourless-themes-el")
-    ;;:config
-    ;;(load-theme 'beelzebub t)
-    )
-#+end_src
-
 
 
 ** Highlighted line-mode
